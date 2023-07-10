@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\game\RetosController;
 use App\Http\Controllers\game\SalasController;
 
@@ -27,6 +28,14 @@ Route::group([
 
 });
 
+
+// =====================================================================
+// Auth
+// =====================================================================
+Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('register', [AuthController::class, 'register'])->name('register');
+Route::get('usuarios', [AuthController::class, 'getUsers'])->name('usuarios');
+Route::post('usuarios/update', [AuthController::class, 'update'])->name('usuarios.update');
 
 // =====================================================================
 // Retos
