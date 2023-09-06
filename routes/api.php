@@ -49,6 +49,7 @@ Route::post('retos/store', [RetosController::class, 'store'])->name('retos.store
 Route::post('salas/by-id', [SalasController::class, 'getById'])->name('salas.by-id');
 Route::post('salas/store', [SalasController::class, 'store'])->name('salas.store');
 Route::post('salas/login-sala', [SalasController::class, 'loginSala'])->name('salas.login-sala');
+Route::get('salas/get-current-players/{id_sala}', [SalasController::class, 'getCurrentPlayers'])->name('salas.get-current-players');
 
 
 

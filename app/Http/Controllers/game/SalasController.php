@@ -76,40 +76,65 @@ class SalasController extends Controller
         ->where('password', $request->password)
         ->first();
 
-        if( $sala ) {
-            $current_players = $sala->ids_jugadores;
-
-            array_push($current_players, $request->jugador);
-
-            Salas::where(
-                'id', $sala->id
-            )
-            ->update([
-                'ids_jugadores' => $current_players
-            ]);
-
-            $new_sala = Salas::select(
-                'id',
-                // 'nombre',
-                // 'codigo_sala',
-                // 'password',
-                // 'cantidad_retos',
-                // 'retos_asignados',
-                // 'owner',
-                'ids_jugadores',
-            )
-            ->where('id', $sala->id)
-            ->first();
-
-
+        if( !$sala ) {
             return response([
-             'msg' => 'Bienvenido a la sala '.$sala->nombre,
-             'data' => $sala
+                'msg' => 'Favor de revisar los datos nuevamente'
             ]);
         }
 
+        $current_players = $sala->ids_jugadores;
+
+        array_push($current_players, intval($request->jugador));
+
+        Salas::where(
+            'id', $sala->id
+        )
+        ->update([
+            'ids_jugadores' => $current_players
+        ]);
+
+        $new_sala = Salas::select(
+            'id',
+            // 'nombre',
+            // 'codigo_sala',
+            // 'password',
+            // 'cantidad_retos',
+            // 'retos_asignados',
+            // 'owner',
+            'ids_jugadores',
+        )
+        ->where('id', $sala->id)
+        ->first();
+
+
         return response([
-            'msg' => 'Favor de revisar los datos nuevamente'
+            'msg' => 'Bienvenido a la sala '.$sala->nombre,
+            'data' => $sala,
+            'jugadores' => $current_players
+        ]);
+
+    }
+
+    public function getCurrentPlayers( $id_sala ) {
+        $sala = Salas::select(
+            'id',
+            'nombre',
+            'ids_jugadores',
+        )
+        ->where('id', $id_sala)
+        ->first();
+
+        if( !$sala ) {
+            return response([
+                'msg' => 'Ha ocurrido un error'
+            ]);
+        }
+
+        $current_players = $sala->ids_jugadores;
+
+        return response([
+            'msg' => 'Sala actual',
+            'data' => $current_players
         ]);
     }
 }
