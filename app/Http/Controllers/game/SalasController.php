@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Models\Salas;
+use App\Models\User;
+
+use App\Events\TestEvent;
 
 class SalasController extends Controller
 {
@@ -82,30 +85,34 @@ class SalasController extends Controller
             ]);
         }
 
-        $current_players = $sala->ids_jugadores;
+        $players_id = $sala->ids_jugadores;
 
-        array_push($current_players, intval($request->jugador));
+        array_push($players_id, intval($request->jugador));
+
+        $current_players = User::select(
+            'id',
+            'nombre',
+            'usuario',
+        )
+        ->whereIn('id', $players_id)
+        ->get();
 
         Salas::where(
             'id', $sala->id
         )
         ->update([
-            'ids_jugadores' => $current_players
+            'ids_jugadores' => $players_id
         ]);
 
         $new_sala = Salas::select(
             'id',
-            // 'nombre',
-            // 'codigo_sala',
-            // 'password',
-            // 'cantidad_retos',
-            // 'retos_asignados',
-            // 'owner',
             'ids_jugadores',
         )
         ->where('id', $sala->id)
         ->first();
 
+        // broadcast( new TestEvent('Eventoooo del loco del barrio') );
+        broadcast( new TestEvent($current_players) );
 
         return response([
             'msg' => 'Bienvenido a la sala '.$sala->nombre,
@@ -130,7 +137,16 @@ class SalasController extends Controller
             ]);
         }
 
-        $current_players = $sala->ids_jugadores;
+        // $current_players = $sala->ids_jugadores;
+        $players_id = $sala->ids_jugadores;
+
+        $current_players = User::select(
+            'id',
+            'nombre',
+            'usuario',
+        )
+        ->whereIn('id', $players_id)
+        ->get();
 
         return response([
             'msg' => 'Sala actual',
